@@ -2,7 +2,7 @@ package me.mvader.slimjson;
 
 public class JsonValue {
 	private Object value;
-	private int type;
+	public int type;
 	
 	public JsonValue(int type, Object value) {
 		this.type = type;

@@ -9,28 +9,33 @@ public class SlimJson {
 	public static Map<String, JsonValue> parse(String json) {
 		Map<String, JsonValue> parsed = new HashMap<String, JsonValue>();
 		List<JsonValue> valueList = new ArrayList<JsonValue>();
-		boolean inArray = false, isValue = false, finished = false;
+		boolean inArray = false, isValue = false, finished = false, wasArray = false;
 		String key = null, value = null;
 		
 		for (int i = 0; i < json.length() && !finished; i++) {
 			char c = json.charAt(i);
 			switch (c) {
 				case '{':
+					isValue = false;
 				case ' ':
 					continue;
 					
 				case '}':
-					parsed.put(key, parseValue(value));
-					finished = true;
+					if (!wasArray)
+						parsed.put(key, parseValue(value));
+					wasArray = false;
 				break;
 				
 				case '[':
 					inArray = true;
+					isValue = true;
 				break;
 				
 				case ']':
-					parsed.put(key, new JsonValue(4, new JsonArray((JsonValue[]) valueList.toArray())));
+					parsed.put(key, new JsonValue(4, new JsonArray(valueList.toArray(new JsonValue[valueList.size()]))));
 					inArray = false;
+					isValue = false;
+					wasArray = true;
 				break;
 				
 				case ':':
