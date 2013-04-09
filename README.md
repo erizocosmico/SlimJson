@@ -27,7 +27,4 @@ public class Example {
 To do
 ====
 
-* Test arrays.
-* Test integers.
-* Test floats.
-* Test booleans.
+* Support for nested objects.
