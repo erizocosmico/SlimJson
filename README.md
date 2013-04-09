@@ -24,7 +24,7 @@ public class Example {
 }
 ```
 
-Todo
+To do
 ====
 
 * Test arrays.
