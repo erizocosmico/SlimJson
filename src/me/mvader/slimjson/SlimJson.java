@@ -10,15 +10,17 @@ public class SlimJson {
 		Map<String, JsonValue> parsed = new HashMap<String, JsonValue>();
 		List<JsonValue> valueList = new ArrayList<JsonValue>();
 		boolean inArray = false, isValue = false, finished = false;
-		String key = null;
+		String key = null, value = null;
 		
 		for (int i = 0; i < json.length() && !finished; i++) {
 			char c = json.charAt(i);
 			switch (c) {
 				case '{':
-				break;
-				
+				case ' ':
+					continue;
+					
 				case '}':
+					parsed.put(key, parseValue(value));
 					finished = true;
 				break;
 				
@@ -27,12 +29,12 @@ public class SlimJson {
 				break;
 				
 				case ']':
+					parsed.put(key, new JsonValue(4, new JsonArray((JsonValue[]) valueList.toArray())));
 					inArray = false;
 				break;
 				
 				case ':':
 					isValue = true;
-					parsed.put(key, new JsonValue(4, new JsonArray((JsonValue[]) valueList.toArray())));
 					valueList.clear();
 				break;
 				
@@ -43,16 +45,17 @@ public class SlimJson {
 				
 				default:
 					int nearestDelim = nearestDelimiter(new StringBuffer(json), i);
-					String value = json.substring(i, nearestDelim);
-					i = nearestDelim;
+					value = json.substring(i, (nearestDelim > 0) ? nearestDelim : json.length() - 1);
+					i = (nearestDelim > 0) ? nearestDelim : json.length() - 1;
 					if (isValue) {
 						if (inArray)
 							valueList.add(parseValue(value));
 						else
 							parsed.put(key, parseValue(value));
 					} else {
-						key = value;
+						key = parseKey(value);
 					}
+					i--;
 			}
 		}
 		
@@ -62,9 +65,9 @@ public class SlimJson {
 	private static int nearestDelimiter(StringBuffer str, int i) {
 		int nearestPos = -1;
 		char[] delimiters = {',', '[', ']', ':', '}'};
-		for (int j = 0; i < delimiters.length; i++) {
+		for (int j = 0; j < delimiters.length; j++) {
 			int pos = str.indexOf(new Character(delimiters[j]).toString(), i);
-			if (nearestPos < 0 || nearestPos > pos)
+			if ((nearestPos < 0 || nearestPos > pos) && pos > 0)
 				nearestPos = pos;
 		}
 		return nearestPos;
@@ -72,8 +75,8 @@ public class SlimJson {
 	
 	public static JsonValue parseValue(String value) {
 		if (value.charAt(0) == '"') {
-			if (value.charAt(value.length() - 1) == '"')
-				return new JsonValue(1, value);
+			if (value.lastIndexOf('"') > 0)
+				return new JsonValue(1, value.substring(1, value.lastIndexOf('"')));
 			else
 				throw new IllegalArgumentException();
 		} else if (value.equals("true"))
@@ -95,5 +98,15 @@ public class SlimJson {
 				throw new IllegalArgumentException();
 			}
 		}
+	}
+	
+	public static String parseKey(String value) {
+		if (value.charAt(0) == '"') {
+			if (value.lastIndexOf('"') > 0)
+				return value.substring(1, value.lastIndexOf('"'));
+			else
+				throw new IllegalArgumentException();
+		} else
+			throw new IllegalArgumentException();
 	}
 }
