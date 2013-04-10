@@ -17,6 +17,13 @@ public class SlimJson {
 			switch (c) {
 				case '{':
 					isValue = false;
+					if (i > 0) {
+						if (inArray) {
+							valueList.add(new JsonValue(6, parse(getNextObject(json, i))));
+						} else {
+							parsed.put(key, new JsonValue(6, parse(getNextObject(json, i))));
+						}
+					}
 				case ' ':
 					continue;
 					
@@ -113,5 +120,22 @@ public class SlimJson {
 				throw new IllegalArgumentException();
 		} else
 			throw new IllegalArgumentException();
+	}
+	
+	public static String getNextObject(String obj, int objStartPos) {
+		int depth = 0, objEndPos = 0;
+		char[] objChars = obj.toCharArray();
+		for (int i = objStartPos; i < obj.length(); i++) {
+			if (objChars[i] == '{')
+				depth++;
+			else if (objChars[i] == '}')
+				depth--;
+			
+			if (depth == 0) {
+				objEndPos = ++i;
+				i = objChars.length;
+			}
+		}
+		return obj.substring(objStartPos, objEndPos);
 	}
 }
