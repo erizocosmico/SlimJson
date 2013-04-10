@@ -23,8 +23,3 @@ public class Example {
   }
 }
 ```
-
-To do
-====
-
-* Support for nested objects.
