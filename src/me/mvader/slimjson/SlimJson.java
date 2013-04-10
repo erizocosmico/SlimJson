@@ -5,7 +5,36 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * @package me.mvader.slimjson
+ * @version 0.5.3
+ * @author mvader <hi@mvader.me>
+ * @license MIT License
+ * Copyright (C) <2013> <mvader>
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software
+ * and associated documentation files (the "Software"), to deal in the Software without restriction,
+ * including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ * and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so,
+ * subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in all copies or substantial
+ * portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT
+ * LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+ * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
+ * OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
 public class SlimJson {
+	
+	/**
+	 * Parses a JSON passed as a string.
+	 * @param json String The json string
+	 * @return Map<String, JsonValue> A HashMap which contains all the items
+	 */
+	
 	public static Map<String, JsonValue> parse(String json) {
 		Map<String, JsonValue> parsed = new HashMap<String, JsonValue>();
 		List<JsonValue> valueList = new ArrayList<JsonValue>();
@@ -74,6 +103,12 @@ public class SlimJson {
 		return parsed;
 	}
 	
+	/**
+	 * Finds the position of the nearest delimiter of the string from a start position.
+	 * @param str StringBuffer The JSON String passed as StringBuffer for performance
+	 * @param i int The current current item position
+	 * @return int Returns the position of the nearest delimiter
+	 */
 	private static int nearestDelimiter(StringBuffer str, int i) {
 		int nearestPos = -1;
 		char[] delimiters = {',', '[', ']', ':', '}'};
@@ -84,6 +119,12 @@ public class SlimJson {
 		}
 		return nearestPos;
 	}
+	
+	/**
+	 * Parses the value and returns a JsonValue object.
+	 * @param value String
+	 * @return JsonValue 
+	 */
 	
 	public static JsonValue parseValue(String value) {
 		if (value.charAt(0) == '"') {
@@ -96,7 +137,7 @@ public class SlimJson {
 		else if (value.equals("false"))
 			return new JsonValue(5, (Boolean) false);
 		else if (value.equals("null"))
-			return new JsonValue(6, null);
+			return new JsonValue(7, null);
 		else if (value.indexOf('.') >= 0) {
 			try {
 				return new JsonValue(3, Double.parseDouble(value));
@@ -112,6 +153,12 @@ public class SlimJson {
 		}
 	}
 	
+	/**
+	 * Parses the key.
+	 * @param value String
+	 * @return String
+	 */
+	
 	public static String parseKey(String value) {
 		if (value.charAt(0) == '"') {
 			if (value.lastIndexOf('"') > 0)
@@ -121,6 +168,13 @@ public class SlimJson {
 		} else
 			throw new IllegalArgumentException();
 	}
+	
+	/**
+	 * Returns the next Object in the JSON string.
+	 * @param obj String
+	 * @param objStartPos int
+	 * @return String
+	 */
 	
 	public static String getNextObject(String obj, int objStartPos) {
 		int depth = 0, objEndPos = 0;
